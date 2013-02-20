@@ -1,0 +1,25 @@
+- fields: {description: All Users, name: vk.all}
+  model: rbac.role
+  pk: 14
+- fields: {description: Unauthenticated User, name: vk.anonymous}
+  model: rbac.role
+  pk: 15
+- fields: {description: '', name: vk.superuser}
+  model: rbac.role
+  pk: 16
+- fields: {description: '', name: vk.staff}
+  model: rbac.role
+  pk: 17
+
+- fields:
+    content_type: [news, post]
+    operation: [news.get_post]
+    roles:
+    - [news.reader]
+    - [news.author]
+    - [news.moderator]
+    - [vk.anonymous]
+    - [vk.superuser]
+    - [vk.staff]
+  model: rbac.modelpermission
+  pk: 5

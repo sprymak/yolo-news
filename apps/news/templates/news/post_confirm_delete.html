@@ -1,0 +1,22 @@
+{% extends 'news/base.html' %}
+{% load i18n %}
+{% load url from future %}
+{% block content_title %}{% trans 'Delete post' %}{% endblock %}
+
+{% block navbar %}
+  <li><a href="/">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li><a href="{% url 'news_index' %}">{% trans 'News' %}</a> <span class="divider">/</span></li>
+  <li class="active"><a href="{% url 'news_post_detail' post.slug %}">{{ post.title }}</a></li>
+{% endblock %}
+
+{% block content %}
+<p>{% blocktrans with title=post.title %}Are you sure you want to delete post "{{ title }}" ? This can not be undone!{% endblocktrans %}</p>
+<form action="" method="post" class="form-stacked">
+{% csrf_token %}
+{{ form.as_p }}
+<div class="actions">
+    {% if perms.news.change_post %}<input type="submit" class="btn danger" value="{%trans 'Delete post' %}">{% endif %}
+    <a href="{% url 'news_post_detail' post.slug %}" class="btn">{% trans 'Cancel' %}</a>
+</div>
+</form>
+{% endblock %}

@@ -1,0 +1,11 @@
+.markItUpEditor {
+    font-family: Monaco, 'Andale Mono', 'Courier New', monospace;
+    font-size: 16px;
+    color: black;
+    padding: 5px;
+    width: 522px;
+    height: 320px;
+    clear: both;
+    line-height: 18px;
+    overflow: auto;
+}

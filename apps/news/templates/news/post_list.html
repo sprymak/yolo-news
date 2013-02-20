@@ -1,0 +1,27 @@
+{% extends 'news/base.html' %}
+{% load i18n %}
+{% load tagging_tags %}
+{% load url from future %}
+{% block content_title %}{% trans 'Latest News' %}{% endblock %}
+
+{% block navbar %}
+  <li><a href="/">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li class="active"><a href="{% url 'news_index' %}">{% trans 'News' %}</a></li>
+{% endblock %}
+
+{% block content %}
+{% if perms.news.add_post %}<a href="{% url 'news_post_add' %}" class="btn primary" title="{% trans 'Create new Post' %}">{% trans 'Create Post' %}</a>{% endif %}
+{% if post_list %}
+<ol>
+	{% for post in post_list %}
+		<li{% if not post.is_published %} class="draft"{% endif %}>
+      <h3><a href="{{ post.get_absolute_url }}">{{ post|escape }}</a></h3>
+      {% if post.teaser %}<p>{{ post.teaser|escape }}</p>{% endif %}
+      {% tags_for_object post as tags %}
+      <div>{% for tag in tags %}<span class="label">{{ tag }}</span> {% endfor %}</div>
+      <div>Author: {{ post.author }}{% if post.is_published %} Published {{ post.date_published }} {% endif %}</div>
+    </li>
+	{% endfor %}
+</ol>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'news/base.html' %}
+{% load i18n %}
+{% load url from future %}
+
+{% block head_style %}
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}news/markitup/skins/simple/style.css" />
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}news/markitup/sets/markdown/style.css" />
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}news/news.css" />
+{% endblock %}
+
+{% block navbar %}
+  <li><a href="/">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li><a href="{% url 'news_index' %}">{% trans 'News' %}</a> <span class="divider">/</span></li>
+  {% if object %}
+  <li class="active"><a href="{% url 'news_post_edit' post.slug %}">{% trans 'Edit Post' %}</a></li>
+  {% else %}
+  <li class="active"><a href="{% url 'news_post_add' %}">{% trans 'Create Post' %}</a></li>
+  {% endif %}
+{% endblock %}
+
+{% block JavaScript %}
+<script type="text/javascript" src="{{STATIC_URL}}js/bootstrap/bootstrap-buttons.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}news/markitup/jquery.markitup.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}news/news.js"></script>
+{% endblock %}
+
+{% block document_ready_functions %}
+$.ajaxSetup({
+  data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+$("textarea").markItUp(mySettings);
+{% if object %}
+$("#publish").click(function(event){
+    var link = $(this);
+    event.preventDefault();
+    var location = link.attr("href");
+    var text = link.text();
+    link.button('toggle');
+    $.post(location, function(data) {
+      if (data.success) {
+          text = data.new_label;
+          link.attr("href", data.new_href);
+      }
+    }).complete(function(){ link.button('toggle'); link.text(text) });
+});
+{% endif %}
+{% endblock %}
+
+{% block content_title %}{% if object %}{% trans 'Edit Post' %}{% else %}{% trans 'Create Post' %}{% endif %}{% endblock %}
+
+{% block content %}
+<form action="" method="post" class="form-stacked">
+{% csrf_token %}
+{{ form.as_p }}
+<div class="actions">
+    {% if perms.news.change_post %}<input type="submit" class="btn primary" value="{% trans 'Save Post' %}">{% endif %}
+    {% if object %}<a href="{% url 'news_post_preview' object.slug %}" class="btn">{% trans 'Preview' %}</a>{% endif %}
+    {% if object and perms.news.publish_post %}<a id="publish" href="{% if object.is_published %}{% url 'news_post_recall' object.slug %}{% else %}{% url 'news_post_publish' object.slug  %}{% endif %}" class="btn">{{ object.is_published|yesno:_("Recall,Publish") }}</a>{% endif %}
+    {% if perms.news.delete_post and object %}<a href="{% url 'news_post_delete' object.slug %}" class="btn danger">{% trans 'Delete' %}</a>{% endif %}
+    {% if object %}
+    <a href="{% url 'news_post_detail' post.slug %}" class="btn">{% trans 'Cancel' %}</a>
+    {% else %}
+    <a href="{% url 'news_index' %}" class="btn">{% trans 'Cancel' %}</a>
+    {% endif %}
+</div>
+</form>
+{% endblock %}

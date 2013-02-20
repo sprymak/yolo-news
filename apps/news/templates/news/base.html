@@ -1,0 +1,16 @@
+{% extends 'frontendPortalMaster.html' %}
+{% load i18n %}
+{% load url from future %}
+
+{% block head_feeds %}<link rel="alternate" type="application/rss+xml" title="Latest News" href="{% url 'news_feeds' 'latest' %}" />{% endblock %}
+{% block page_title %}{% trans 'Site News' %}{% endblock %}
+
+{% block extra_navbar %}
+<ul class="breadcrumb">
+{% block navbar %}Breadcrumbs here{% endblock %}
+</ul>
+{% endblock %}
+
+{% block sidebar_content %}
+{% if perms.news.add_post %}<a href="{% url 'news_post_add' %}" title="Create new Post">{% trans 'Create Post' %}</a>{% endif %}
+{% endblock %}
